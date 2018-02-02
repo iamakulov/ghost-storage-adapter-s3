@@ -1,5 +1,7 @@
 # Ghost storage adapter S3
 
+**This is a fork of [`ghost-storage-adapter-s3`](http://npmjs.com/package/ghost-storage-adapter-s3) with an ability to import images through Ghost import. Requires a slightly modified Ghost version.**
+
 An AWS S3 storage adapter for Ghost 1.x
 
 For Ghost 0.10.x and 0.11.x support check out

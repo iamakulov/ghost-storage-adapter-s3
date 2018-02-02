@@ -1,8 +1,8 @@
 {
   "author": {
-    "name": "Colin Meinke",
-    "email": "hello@colinmeinke.com",
-    "url": "https://colinmeinke.com"
+    "name": "Ivan Akulov",
+    "email": "mail@iamakulov.com",
+    "url": "https://iamakulov.com"
   },
   "babel": {
     "plugins": [
@@ -24,7 +24,7 @@
     ]
   },
   "bugs": {
-    "url": "https://github.com/colinmeinke/ghost-storage-adapter-s3/issues"
+    "url": "https://github.com/iamakulov/ghost-storage-adapter-s3/issues"
   },
   "config": {
     "commitizen": {
@@ -48,7 +48,7 @@
     "snazzy": "^5.0.0",
     "standard": "^8.3.0"
   },
-  "homepage": "https://github.com/colinmeinke/ghost-storage-adapter-s3#readme",
+  "homepage": "https://github.com/iamakulov/ghost-storage-adapter-s3#readme",
   "license": "ISC",
   "keywords": [
     "adapter",
@@ -58,10 +58,10 @@
     "storage"
   ],
   "main": "index.js",
-  "name": "ghost-storage-adapter-s3",
+  "name": "ghost-storage-adapter-s3-everwrite",
   "repository": {
     "type": "git",
-    "url": "https://github.com/colinmeinke/ghost-storage-adapter-s3.git"
+    "url": "https://github.com/iamakulov/ghost-storage-adapter-s3.git"
   },
   "scripts": {
     "build": "babel ./src/index.js --out-file ./index.js",
