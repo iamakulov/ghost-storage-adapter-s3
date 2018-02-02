@@ -1,6 +1,6 @@
 import AWS from 'aws-sdk'
 import BaseStore from 'ghost-storage-base'
-import { join } from 'path'
+import { join, basename, extname } from 'path'
 import Promise, { promisify } from 'bluebird'
 import { readFile } from 'fs'
 
@@ -52,6 +52,53 @@ class Store extends BaseStore {
     })
   }
 
+  generateUnique(dir, name, ext, i) {
+    var self = this,
+      filename,
+      append = '';
+
+    if (i) {
+      append = '-' + i;
+    }
+
+    if (ext) {
+      filename = name + append + ext;
+    } else {
+      filename = name + append;
+    }
+
+    return this.exists(filename, dir).then(function (exists) {
+      if (exists) {
+        i = i + 1;
+        return self.generateUnique(dir, name, ext, i);
+      } else {
+        return join(dir, filename);
+      }
+    });
+  }
+
+  getUniqueFileName(image, targetDir) {
+    var ext = extname(image.name),
+      name;
+
+    // Ignoring the targetDir parameter
+    // since we’re uploading the image into S3
+    const realTargetDir = this.getTargetDir(this.pathPrefix);
+
+    // poor extension validation
+    // .1 is not a valid extension
+    let uniqueNamePromise;
+    if (!ext.match(/.\d/)) {
+      name = this.getSanitizedFileName(basename(image.name, ext));
+      uniqueNamePromise = this.generateUnique(realTargetDir, name, ext, 0);
+    } else {
+      name = this.getSanitizedFileName(basename(image.name));
+      uniqueNamePromise = this.generateUnique(realTargetDir, name, null, 0);
+    }
+
+    return uniqueNamePromise.then((fileName) => `${this.host}/${fileName}`);
+  }
+
   exists (fileName, targetDir) {
     return new Promise((resolve, reject) => {
       return this.s3()
@@ -85,7 +132,9 @@ class Store extends BaseStore {
       Promise.all([
         this.getUniqueFileName(image, directory),
         readFileAsync(image.path)
-      ]).then(([ fileName, file ]) => (
+      ]).then(([ fileName, file ]) => {
+        const fileNameWithoutHost = fileName.replace(this.host + '/', '');
+
         this.s3()
           .putObject({
             ACL: 'public-read',
@@ -93,11 +142,11 @@ class Store extends BaseStore {
             Bucket: this.bucket,
             CacheControl: `max-age=${30 * 24 * 60 * 60}`,
             ContentType: image.type,
-            Key: stripLeadingSlash(fileName)
+            Key: stripLeadingSlash(fileNameWithoutHost)
           })
           .promise()
-          .then(() => resolve(`${this.host}/${fileName}`))
-      )).catch(error => reject(error))
+          .then(() => resolve(`${this.host}/${fileNameWithoutHost}`))
+      }).catch(error => reject(error))
     })
   }
 
