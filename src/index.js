@@ -155,7 +155,7 @@ class Store extends BaseStore {
       this.s3()
         .getObject({
           Bucket: this.bucket,
-          Key: stripLeadingSlash(req.path)
+          Key: `${this.pathPrefix}/${stripLeadingSlash(req.path)}`
         }).on('httpHeaders', function (statusCode, headers, response) {
           res.set(headers)
         })
